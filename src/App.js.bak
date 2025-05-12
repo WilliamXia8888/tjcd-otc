@@ -1,0 +1,101 @@
+import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import './App.css';
+import { Container, Typography, Button, CircularProgress } from '@mui/material';
+
+// TJCD 代币 ABI (简化版)
+const tokenABI = [
+  "function name() view returns (string)",
+  "function symbol() view returns (string)",
+  "function decimals() view returns (uint8)",
+  "function totalSupply() view returns (uint256)",
+  "function balanceOf(address) view returns (uint256)",
+  "function transfer(address to, uint amount) returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function approve(address spender, uint amount) returns (bool)"
+];
+
+function App() {
+  const [loading, setLoading] = useState(false);
+  const [account, setAccount] = useState(null);
+  const [balance, setBalance] = useState(null);
+  const [provider, setProvider] = useState(null);
+  const [signer, setSigner] = useState(null);
+  const [tokenContract, setTokenContract] = useState(null);
+
+  const tokenAddress = "0xf8798a4b7b2560d2e5627abd1a13a0a02899a3be";
+
+  useEffect(() => {
+    const init = async () => {
+      if (window.ethereum) {
+        try {
+          // Updated for ethers v6
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          setProvider(provider);
+          
+          const signer = await provider.getSigner();
+          setSigner(signer);
+          
+          const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+          setTokenContract(tokenContract);
+        } catch (error) {
+          console.error("初始化错误:", error);
+        }
+      } else {
+        alert("请安装 MetaMask 或其他兼容的钱包!");
+      }
+    };
+    
+    init();
+  }, []);
+
+  const connectWallet = async () => {
+    setLoading(true);
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setAccount(accounts[0]);
+      
+      if (tokenContract) {
+        const balance = await tokenContract.balanceOf(accounts[0]);
+        // Updated for ethers v6
+        setBalance(ethers.formatUnits(balance, 18)); // 假设 TJCD 有 18 位小数
+      }
+    } catch (error) {
+      console.error("连接钱包错误:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Container maxWidth="md" className="App">
+      <Typography variant="h3" component="h1" gutterBottom>
+        TJCD 代币 OTC 交易平台
+      </Typography>
+      
+      {!account ? (
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={connectWallet}
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} /> : "连接钱包"}
+        </Button>
+      ) : (
+        <div>
+          <Typography variant="h6">
+            已连接账户: {account.substring(0, 6)}...{account.substring(account.length - 4)}
+          </Typography>
+          {balance !== null && (
+            <Typography variant="h6">
+              TJCD 余额: {balance}
+            </Typography>
+          )}
+        </div>
+      )}
+    </Container>
+  );
+}
+
+export default App;
