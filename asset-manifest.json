@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/tjcd-otc/static/css/main.3481e1d1.css",
+    "main.js": "/tjcd-otc/static/js/main.99bb587f.js",
+    "static/js/453.222bf366.chunk.js": "/tjcd-otc/static/js/453.222bf366.chunk.js",
+    "index.html": "/tjcd-otc/index.html",
+    "main.3481e1d1.css.map": "/tjcd-otc/static/css/main.3481e1d1.css.map",
+    "main.99bb587f.js.map": "/tjcd-otc/static/js/main.99bb587f.js.map",
+    "453.222bf366.chunk.js.map": "/tjcd-otc/static/js/453.222bf366.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3481e1d1.css",
+    "static/js/main.99bb587f.js"
+  ]
+}
